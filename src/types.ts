@@ -41,6 +41,7 @@ export interface ThemeConfig {
 export interface AppConfig {
   titleLine1: string
   titleLine2: string
+  showTitle: boolean
   tableId: string
   progressiveWager: number
   tableOpen: boolean
@@ -48,6 +49,8 @@ export interface AppConfig {
   decimals: number
   leftCard: PlayingCardSpec
   rightCard: PlayingCardSpec
+  /** Data URL of an operator-uploaded logo; replaces the two hero cards. */
+  logo?: string
   jackpots: Jackpot[]
   theme: ThemeConfig
   demoHandsPerMinute: number

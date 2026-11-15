@@ -62,6 +62,23 @@ export function AdminPanel({
     set({ jackpots: [...config.jackpots, j] })
   }
 
+  const uploadLogo = async (file: File | undefined) => {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      window.alert('Choose an image file for the logo.')
+      return
+    }
+    if (file.size > 1024 * 1024) {
+      window.alert('Logo images must be 1 MB or smaller.')
+      return
+    }
+    try {
+      set({ logo: await readAsDataUrl(file) })
+    } catch {
+      window.alert('Could not read that image.')
+    }
+  }
+
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -97,20 +114,22 @@ export function AdminPanel({
 
       <section>
         <h3>Table</h3>
-        <label>
-          Title line 1
-          <input
-            value={config.titleLine1}
-            onChange={(e) => set({ titleLine1: e.target.value })}
-          />
-        </label>
-        <label>
-          Title line 2
-          <input
-            value={config.titleLine2}
-            onChange={(e) => set({ titleLine2: e.target.value })}
-          />
-        </label>
+        <div className="row">
+          <label>
+            Title line 1
+            <input
+              value={config.titleLine1}
+              onChange={(e) => set({ titleLine1: e.target.value })}
+            />
+          </label>
+          <label>
+            Title line 2
+            <input
+              value={config.titleLine2}
+              onChange={(e) => set({ titleLine2: e.target.value })}
+            />
+          </label>
+        </div>
         <div className="row">
           <label>
             Table ID
@@ -149,45 +168,96 @@ export function AdminPanel({
             />
           </label>
         </div>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={config.tableOpen}
-            onChange={(e) => set({ tableOpen: e.target.checked })}
-          />
-          Table open
-        </label>
-      </section>
-
-      <section>
-        <h3>Logo cards</h3>
         <div className="row">
-          <CardPick
-            label="Left"
-            card={config.leftCard}
-            onChange={(leftCard) => set({ leftCard })}
-          />
-          <CardPick
-            label="Right"
-            card={config.rightCard}
-            onChange={(rightCard) => set({ rightCard })}
-          />
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={config.tableOpen}
+              onChange={(e) => set({ tableOpen: e.target.checked })}
+            />
+            Table open
+          </label>
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={config.showTitle}
+              onChange={(e) => set({ showTitle: e.target.checked })}
+            />
+            Show title
+          </label>
         </div>
       </section>
 
       <section>
+        <h3>Logo</h3>
+        {config.logo ? (
+          <>
+            <div className="logo-preview">
+              <img src={config.logo} alt="Current logo" />
+            </div>
+            <button type="button" onClick={() => set({ logo: undefined })}>
+              Remove logo
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="row">
+              <CardPick
+                label="Left"
+                card={config.leftCard}
+                onChange={(leftCard) => set({ leftCard })}
+              />
+              <CardPick
+                label="Right"
+                card={config.rightCard}
+                onChange={(rightCard) => set({ rightCard })}
+              />
+            </div>
+            <label className="file-btn">
+              Upload logo
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                onChange={(e) => {
+                  void uploadLogo(e.target.files?.[0])
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            <p className="hint">
+              Optional; replaces the two cards. PNG, JPG, WebP or SVG, max 1 MB.
+            </p>
+          </>
+        )}
+      </section>
+
+      <section className="span-2">
         <div className="section-head">
           <h3>Meters &amp; payouts</h3>
         </div>
         <p className="hint">
-          Progressives climb from each side wager. Must-hit meters can pop before the cap.
-          Fixed payouts stay at the set amount for weaker hands.
+          Progressives climb per side wager; must-hit meters show their cap beside the label.
         </p>
-        {config.jackpots.map((j, i) => (
-          <article key={j.id} className="jackpot-edit">
-            <header>
-              <strong>{j.label || 'Untitled'}</strong>
-              <div className="icon-row">
+        <div className="meters-editors">
+          {config.jackpots.map((j, i) => (
+            <details key={j.id} className="jackpot-edit">
+              <summary
+                onClick={(e) => {
+                  e.preventDefault()
+                  toggleMeter(e.currentTarget.parentElement as HTMLDetailsElement)
+                }}
+              >
+                <span className="jackpot-name">{j.label || 'Untitled'}</span>
+                <span className={`jackpot-kind kind-${j.kind}`}>{kindLabel(j.kind)}</span>
+                <span className="jackpot-value">
+                  {formatMoney(
+                    j.kind === 'fixed' ? j.seed : j.current,
+                    config.currencySymbol,
+                    config.decimals,
+                  )}
+                </span>
+              </summary>
+              <div className="editor-tools">
                 <button type="button" onClick={() => move(i, -1)} disabled={i === 0}>
                   Up
                 </button>
@@ -202,7 +272,6 @@ export function AdminPanel({
                   Remove
                 </button>
               </div>
-            </header>
             <label>
               Hand / label
               <input
@@ -307,11 +376,12 @@ export function AdminPanel({
                 )}
               </>
             )}
-            <button type="button" className="hit" onClick={() => onHit(j.id)}>
-              Award / reset
-            </button>
-          </article>
-        ))}
+              <button type="button" className="hit" onClick={() => onHit(j.id)}>
+                Award / reset
+              </button>
+            </details>
+          ))}
+        </div>
         <div className="add-row">
           <button type="button" onClick={() => add('progressive')}>
             Add progressive
@@ -362,6 +432,19 @@ export function AdminPanel({
       </section>
 
       <section>
+        <h3>Sign window</h3>
+        <p className="hint">
+          Opens the sign in its own read-only window for a table screen or TV, mirrored
+          live from here. Press F there for fullscreen.
+        </p>
+        <div className="add-row">
+          <button type="button" onClick={openSignWindow}>
+            Open sign window
+          </button>
+        </div>
+      </section>
+
+      <section>
         <h3>Look</h3>
         <div className="swatches">
           {(
@@ -390,24 +473,6 @@ export function AdminPanel({
       </section>
 
       <section>
-        <h3>Recent awards</h3>
-        {hits.length === 0 ? (
-          <p className="hint">No awards yet.</p>
-        ) : (
-          <ul className="hits">
-            {hits.slice(0, 12).map((h) => (
-              <li key={h.id}>
-                <span>{h.label}</span>
-                <strong>
-                  {formatMoney(h.amount, config.currencySymbol, config.decimals)}
-                </strong>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section>
         <h3>Backup</h3>
         <div className="add-row">
           <button type="button" onClick={exportJson}>
@@ -429,6 +494,22 @@ export function AdminPanel({
           </button>
         </div>
       </section>
+
+      {hits.length > 0 && (
+        <section className="span-2">
+          <h3>Recent awards</h3>
+          <ul className="hits">
+            {hits.slice(0, 12).map((h) => (
+              <li key={h.id}>
+                <span>{h.label}</span>
+                <strong>
+                  {formatMoney(h.amount, config.currencySymbol, config.decimals)}
+                </strong>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </aside>
   )
 }
@@ -467,6 +548,37 @@ function CardPick({
       </select>
     </fieldset>
   )
+}
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
+function kindLabel(kind: JackpotKind): string {
+  if (kind === 'must_hit') return 'Must-hit'
+  if (kind === 'fixed') return 'Fixed'
+  return 'Progressive'
+}
+
+function toggleMeter(details: HTMLDetailsElement) {
+  const willOpen = !details.open
+  details.parentElement
+    ?.querySelectorAll('details')
+    .forEach((other) => {
+      if (other !== details) other.open = false
+    })
+  details.open = willOpen
+}
+
+function openSignWindow() {
+  const url = new URL(window.location.href)
+  url.searchParams.set('mode', 'display')
+  window.open(url.toString(), 'blackjack-sign', 'popup=yes,width=900,height=1500')
 }
 
 function toHex(color: string): string {

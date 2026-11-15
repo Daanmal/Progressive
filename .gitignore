@@ -7,9 +7,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies and build output
 node_modules
 dist
 dist-ssr
+*.tsbuildinfo
+coverage
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
 *.local
 
 # Editor directories and files
@@ -17,8 +25,15 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Stray nested clone of this project, not part of the app
+Progressive/
+
+# Local design reference photo of the physical sign
+images.jpg

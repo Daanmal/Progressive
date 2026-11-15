@@ -32,12 +32,13 @@ select {
 }
 
 .shell.with-admin {
-  grid-template-columns: minmax(0, 1fr) min(420px, 42vw);
+  grid-template-columns: minmax(0, 1fr) min(620px, 46vw);
 }
 
 .board {
   position: relative;
   height: 100%;
+  container-type: size;
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -55,6 +56,7 @@ select {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  container-type: size;
   background:
     radial-gradient(120% 70% at 50% 0%, #1a2744 0%, var(--bg, #070b16) 55%),
     var(--bg, #070b16);
@@ -75,12 +77,27 @@ select {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  height: clamp(72px, 12vh, 118px);
+  height: clamp(40px, 15cqh, 118px);
 }
 
 .hero-card {
   height: 100%;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
+}
+
+.brand-logo {
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
+}
+
+.logo-preview img {
+  display: block;
+  height: 56px;
+  max-width: 100%;
+  object-fit: contain;
+  margin-bottom: 0.4rem;
 }
 
 .hero-card.overlap {
@@ -92,7 +109,7 @@ select {
   font-size: 0.85rem;
   letter-spacing: 0.4em;
   opacity: 0.85;
-  margin: 0.2vh 0;
+  margin: 0.2cqh 0;
 }
 
 .brand {
@@ -118,12 +135,12 @@ select {
 }
 
 .brand-1 {
-  font-size: clamp(1.7rem, 4.2vh, 3.1rem);
+  font-size: clamp(1.2rem, 4.2cqh, 3.1rem);
   letter-spacing: 0.06em;
 }
 
 .brand-2 {
-  font-size: clamp(1.9rem, 4.8vh, 3.5rem);
+  font-size: clamp(1.3rem, 4.8cqh, 3.5rem);
   letter-spacing: 0.16em;
 }
 
@@ -145,17 +162,26 @@ select {
 }
 
 .meter-label {
-  margin: 0 0 0.45vh;
-  font-size: clamp(0.85rem, 1.9vh, 1.2rem);
+  margin: 0 0 0.45cqh;
+  font-size: clamp(0.7rem, 1.9cqh, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
+.meter-cap {
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #bcd9ef;
+  white-space: nowrap;
+}
+
 .plaque {
   position: relative;
   border-radius: 999px;
-  padding: clamp(4px, 0.7vh, 8px) 1.1rem clamp(6px, 0.9vh, 10px);
+  padding: clamp(4px, 0.7cqh, 8px) 1.1rem clamp(6px, 0.9cqh, 10px);
   background:
     linear-gradient(
       180deg,
@@ -189,7 +215,7 @@ select {
   display: block;
   font-family: 'Oswald', sans-serif;
   font-weight: 600;
-  font-size: clamp(1.7rem, 4.6vh, 3.2rem);
+  font-size: clamp(1.2rem, 4.6cqh, 3.2rem);
   color: var(--gold);
   letter-spacing: 0.02em;
   text-shadow:
@@ -201,7 +227,7 @@ select {
 
 .status-slot {
   flex: 0 0 auto;
-  min-height: 64px;
+  min-height: clamp(40px, 7cqh, 64px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +239,7 @@ select {
 .table-open {
   margin: 0;
   font-family: 'Oswald', sans-serif;
-  font-size: clamp(1.6rem, 4.2vh, 2.8rem);
+  font-size: clamp(1.2rem, 4.2cqh, 2.8rem);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -276,7 +302,7 @@ select {
 .celebrate-amount {
   margin: 0;
   font-family: 'Oswald', sans-serif;
-  font-size: clamp(2.4rem, 8vh, 5rem);
+  font-size: clamp(1.8rem, 8cqh, 5rem);
   color: var(--gold, #f3d15a);
 }
 
@@ -299,20 +325,34 @@ select {
   opacity: 1;
 }
 
+.shell.with-admin .settings-fab {
+  display: none;
+}
+
 .admin {
   height: 100%;
   overflow: auto;
   background: #101722;
   border-left: 1px solid #243044;
-  padding: 1rem 1.1rem 3rem;
+  padding: 0.8rem 1rem 0.9rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.45rem 1rem;
+  align-items: start;
+  align-content: start;
+}
+
+.admin .span-2 {
+  grid-column: 1 / -1;
 }
 
 .admin-head {
   display: flex;
+  grid-column: 1 / -1;
   justify-content: space-between;
   align-items: flex-start;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .admin-kicker {
@@ -324,12 +364,12 @@ select {
 }
 
 .admin h2 {
-  margin: 0.15rem 0 0;
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1.15rem;
 }
 
 .admin h3 {
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.35rem;
   font-size: 0.82rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -337,18 +377,18 @@ select {
 }
 
 .admin section {
-  margin-bottom: 1.25rem;
-  padding-bottom: 1.1rem;
+  margin: 0;
+  padding: 0 0 0.4rem;
   border-bottom: 1px solid #243044;
 }
 
 .admin label {
   display: flex;
   flex-direction: column;
-  gap: 0.28rem;
+  gap: 0.15rem;
   font-size: 0.82rem;
   color: #c5d0e0;
-  margin-bottom: 0.55rem;
+  margin-bottom: 0.25rem;
 }
 
 .admin input,
@@ -358,7 +398,7 @@ select {
   border: 1px solid #334155;
   background: #0c121c;
   color: #f4f1e8;
-  padding: 0.45rem 0.55rem;
+  padding: 0.35rem 0.45rem;
 }
 
 .admin button {
@@ -393,8 +433,8 @@ select {
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.45rem;
 }
 
 .check {
@@ -404,56 +444,119 @@ select {
 }
 
 .check.tight {
-  margin-top: 1.4rem;
+  margin-top: 1rem;
 }
 
 .hint {
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.55rem;
   color: #93a4bb;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+}
+
+.meters-editors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
 }
 
 .jackpot-edit {
+  align-self: start;
   background: #0c121c;
   border: 1px solid #243044;
   border-radius: 10px;
-  padding: 0.7rem 0.75rem 0.8rem;
-  margin-bottom: 0.65rem;
+  padding: 0 0.6rem 0.55rem;
 }
 
-.jackpot-edit header {
+.jackpot-edit > summary {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
   align-items: center;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+  padding: 0.38rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.85rem;
 }
 
-.icon-row {
+.jackpot-edit > summary::-webkit-details-marker {
+  display: none;
+}
+
+.jackpot-edit[open] > summary {
+  border-bottom: 1px solid #1c2738;
+  margin-bottom: 0.45rem;
+}
+
+.jackpot-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jackpot-kind {
+  flex: 0 0 auto;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid #334155;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #9db0cc;
+}
+
+.jackpot-kind.kind-progressive {
+  color: #8fd4f2;
+  border-color: #2f5872;
+}
+
+.jackpot-kind.kind-must_hit {
+  color: #f3d15a;
+  border-color: #6b5a22;
+}
+
+.jackpot-kind.kind-fixed {
+  color: #b6c2d4;
+  border-color: #3a4658;
+}
+
+.jackpot-value {
+  flex: 0 0 auto;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95em;
+  color: var(--gold, #f3d15a);
+  white-space: nowrap;
+}
+
+.editor-tools {
   display: flex;
+  justify-content: flex-end;
   gap: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
-.icon-row button {
-  padding: 0.25rem 0.45rem;
-  font-size: 0.75rem;
+.editor-tools button {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.72rem;
 }
 
 .add-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .swatches {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.4rem 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  gap: 0.3rem 0.5rem;
 }
 
 .swatch input {
   padding: 0;
-  height: 32px;
+  height: 24px;
 }
 
 .card-pick {
@@ -512,6 +615,72 @@ select {
   }
 }
 
+/* Wide sign board (16:9 TVs, laptops): brand beside the meters. */
+@container (min-aspect-ratio: 1 / 1) {
+  .sign {
+    width: 100%;
+    height: 100%;
+    padding: 16px 26px 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    column-gap: 26px;
+    row-gap: 6px;
+  }
+
+  .logo-block {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    margin-bottom: 0;
+  }
+
+  .cards-row {
+    height: clamp(64px, 20cqh, 170px);
+  }
+
+  .brand-1 {
+    font-size: clamp(1.6rem, 6.4cqh, 3.4rem);
+  }
+
+  .brand-2 {
+    font-size: clamp(1.8rem, 7.2cqh, 3.8rem);
+  }
+
+  .meters {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin: 0;
+    justify-content: center;
+    gap: clamp(6px, 1.5cqh, 16px);
+  }
+
+  .meter-label {
+    font-size: clamp(0.75rem, 2cqh, 1.3rem);
+  }
+
+  .plaque {
+    padding: clamp(5px, 0.9cqh, 11px) 1.3rem clamp(7px, 1.1cqh, 13px);
+  }
+
+  .amount {
+    font-size: clamp(1.4rem, 5.2cqh, 3.6rem);
+  }
+
+  .status-slot {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+    min-height: 0;
+  }
+
+  .board-foot {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 6px;
+  }
+}
+
 @media (max-width: 900px) {
   .shell.with-admin {
     grid-template-columns: 1fr;
@@ -521,5 +690,15 @@ select {
     position: absolute;
     inset: 0;
     z-index: 15;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin {
+    grid-template-columns: 1fr;
+  }
+
+  .admin .span-2 {
+    grid-column: auto;
   }
 }

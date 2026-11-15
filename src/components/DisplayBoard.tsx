@@ -32,15 +32,29 @@ export function DisplayBoard({ config, celebrating }: Props) {
       <div className="sign">
         <div className="logo-block">
           <div className="cards-row">
-            <PlayingCard card={config.leftCard} rotate={-12} className="hero-card" />
-            <PlayingCard card={config.rightCard} rotate={12} className="hero-card overlap" />
+            {config.logo ? (
+              <img
+                className="brand-logo"
+                src={config.logo}
+                alt={`${config.titleLine1} ${config.titleLine2}`}
+              />
+            ) : (
+              <>
+                <PlayingCard card={config.leftCard} rotate={-12} className="hero-card" />
+                <PlayingCard card={config.rightCard} rotate={12} className="hero-card overlap" />
+              </>
+            )}
           </div>
-          <div className="flourish">✦</div>
-          <h1 className="brand">
-            <span className="brand-1">{config.titleLine1}</span>
-            <span className="brand-2">{config.titleLine2}</span>
-          </h1>
-          <div className="flourish">✦</div>
+          {config.showTitle ? (
+            <>
+              <div className="flourish">✦</div>
+              <h1 className="brand">
+                <span className="brand-1">{config.titleLine1}</span>
+                <span className="brand-2">{config.titleLine2}</span>
+              </h1>
+              <div className="flourish">✦</div>
+            </>
+          ) : null}
         </div>
 
         <ol className="meters">
@@ -93,16 +107,22 @@ function JackpotRow({
   symbol: string
   decimals: number
 }) {
-  const amount =
-    jackpot.kind === 'fixed' ? jackpot.seed : jackpot.current
-  const label =
+  const amount = jackpot.kind === 'fixed' ? jackpot.seed : jackpot.current
+  const name = jackpot.label.trim()
+  const cap =
     jackpot.kind === 'must_hit' && jackpot.mustHitBy != null
-      ? jackpot.label
-      : jackpot.label
+      ? `Must hit by ${formatMoney(jackpot.mustHitBy, symbol, Math.max(decimals, 2))}`
+      : null
 
   return (
     <li className="meter">
-      <p className="meter-label">{label}</p>
+      {(name || cap) && (
+        <p className="meter-label">
+          {name}
+          {name && cap && ' · '}
+          {cap && <span className="meter-cap">{cap}</span>}
+        </p>
+      )}
       <div className="plaque">
         <span className="plaque-shine" />
         <span className="amount">

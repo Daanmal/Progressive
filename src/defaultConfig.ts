@@ -6,6 +6,7 @@ export const HITS_KEY = 'blackjack-match-hits-v1'
 export const defaultConfig: AppConfig = {
   titleLine1: 'BLACKJACK',
   titleLine2: 'MATCH',
+  showTitle: true,
   tableId: 'BJ-204',
   progressiveWager: 5,
   tableOpen: false,
@@ -65,7 +66,7 @@ export const defaultConfig: AppConfig = {
     },
     {
       id: 'must-hit',
-      label: 'Must Hit by $300.00',
+      label: 'Must Hit',
       kind: 'must_hit',
       current: 132.5,
       seed: 50,

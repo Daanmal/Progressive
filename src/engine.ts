@@ -41,7 +41,7 @@ export function applyWager(
 export function hitJackpot(j: Jackpot): { jackpot: Jackpot; hit: HitRecord } {
   const amount = j.kind === 'fixed' ? j.seed : j.current
   return {
-    jackpot: { ...j, current: j.kind === 'fixed' ? j.seed : j.seed },
+    jackpot: { ...j, current: j.seed },
     hit: recordHit(j, amount),
   }
 }
