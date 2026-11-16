@@ -149,6 +149,14 @@ export function AdminPanel({
             />
           </label>
         </div>
+        <label>
+          Footer notice
+          <input
+            value={config.footerNotice ?? ''}
+            placeholder="ARE YOU PLAYING SMOOTH?"
+            onChange={(e) => set({ footerNotice: e.target.value })}
+          />
+        </label>
         <div className="row">
           <label>
             Currency

@@ -4,7 +4,7 @@ Project instructions for coding agents working in this repo.
 
 ## What this is
 
-A casino-style table sign for a Blackjack progressive jackpot ("Blackjack Match"),
+A casino-style table sign for a Blackjack progressive jackpot,
 built to reproduce the physical sign in `images.jpg`: two hero cards, a stacked
 logo, a vertical list of jackpot plaques, a table open/closed line, and a footer
 with the progressive wager and table ID.

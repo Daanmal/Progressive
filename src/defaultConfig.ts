@@ -4,10 +4,11 @@ export const STORAGE_KEY = 'blackjack-match-config-v1'
 export const HITS_KEY = 'blackjack-match-hits-v1'
 
 export const defaultConfig: AppConfig = {
-  titleLine1: 'BLACKJACK',
-  titleLine2: 'MATCH',
-  showTitle: true,
+  titleLine1: '',
+  titleLine2: '',
+  showTitle: false,
   tableId: 'BJ-204',
+  footerNotice: 'ARE YOU PLAYING SMOOTH?',
   progressiveWager: 5,
   tableOpen: false,
   currencySymbol: '$',

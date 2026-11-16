@@ -25,6 +25,8 @@ export function PlayingCard({ card, rotate = 0, className }: Props) {
     <svg
       className={className}
       viewBox="0 0 120 168"
+      width={120}
+      height={168}
       role="img"
       aria-label={`${card.rank} of ${card.suit}`}
       style={{ transform: `rotate(${rotate}deg)` }}

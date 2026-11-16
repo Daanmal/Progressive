@@ -1,13 +1,13 @@
-# Blackjack Match · Progressive
+# Progressive Jackpots
 
 A casino table sign for a blackjack progressive jackpot, with a live operator
 controller. The sign runs full screen in any browser — a vertical table sign on a
 portrait screen, or a widescreen layout on a 16:9 TV or laptop — and the
 controller edits meters, caps, payouts and colours in real time.
 
-Everything is local: no backend, no accounts, no analytics. Configuration lives in
-`localStorage` and can be exported to JSON; the only outbound request is the Google
-Fonts stylesheet.
+Everything is local: no backend, no accounts, no analytics, and no outbound
+requests — fonts and the app shell are served from the build itself. Configuration
+lives in `localStorage` and can be exported to JSON.
 
 ## Features
 
@@ -18,8 +18,14 @@ Fonts stylesheet.
 - **Fixed payouts** — constant prizes for weaker hands.
 - **Custom logo** — upload a PNG/JPG/WebP/SVG (max 1 MB) to replace the two hero
   cards, or pick the cards yourself.
-- **Title toggle** — hide the `BLACKJACK MATCH` wordmark (and its flourishes) when
-  the sign carries a logo instead.
+- **Title lines** — two editable wordmark lines, off by default; the sign shows
+  just the hero cards (or your logo) until you add text.
+- **Footer notice** — a short operator-editable line (default `ARE YOU PLAYING
+  SMOOTH?`) sits left of `PROGRESSIVE WAGER`; clear it to hide it again.
+- **Screen wake lock** — while the sign is on screen it asks the browser to keep the
+  screen awake, and asks again whenever the tab comes back; the pointer also hides
+  after 2.5 s without input. Best effort — see [Notes](#notes) for browsers that
+  refuse or do not support it.
 - **Widescreen support** — the sign is sized with container queries: portrait
   boards keep the vertical sign, square-or-wider boards place the brand left and
   the meters right.
@@ -53,8 +59,8 @@ Open the URL Vite prints (usually <http://localhost:5173>).
 - `S` or the gear button opens the controller; `Esc` closes it.
 - **Sign window** opens the sign in its own read-only window — put it on a TV and
   keep the controller on the laptop. Same browser only; press `F` there too.
-- **Table** sets the wordmark, table ID, side wager, currency and decimals, and
-  whether the table is open and the title shown.
+- **Table** sets the wordmark, table ID, footer notice, side wager, currency and
+  decimals, and whether the table is open and the title shown.
 - **Logo** uploads a custom logo (replacing the hero cards) or lets you choose the
   two cards.
 - **Meters & payouts** edits each meter: label, type, current value, reset seed,
@@ -96,5 +102,13 @@ this project follows.
 
 - No test runner is configured; `npm run build` (type-check plus bundle) is the
   check used for changes.
-- Fonts are loaded from Google Fonts in `index.html`; the app works without them
-  but falls back to system faces.
+- Fonts are self-hosted from `public/fonts` (OFL licensed); the app falls back to
+  system faces if they fail to load.
+- **The screen wake lock is best effort.** The request is skipped entirely in
+  browsers without the Screen Wake Lock API, and silently ignored if the device
+  refuses it — battery saver or low-power mode, a profile policy, or an embedded /
+  webview browser. Nothing breaks: the sign keeps running exactly as before and the
+  screen follows the device's own sleep settings. Browsers drop the lock whenever
+  the page is hidden, so it is re-requested when the tab becomes visible again.
+  Support at the time of writing: Chrome/Edge on desktop and Android, Safari 16.4
+  and later.

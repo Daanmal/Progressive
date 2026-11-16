@@ -1,16 +1,31 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { AdminPanel } from './components/AdminPanel'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { DisplayBoard } from './components/DisplayBoard'
 import { defaultConfig, HITS_KEY, STORAGE_KEY } from './defaultConfig'
 import { applyWager, hitJackpot, tickDemo } from './engine'
 import { openChannel, withoutLogo, type SyncMessage } from './sync'
 import type { AppConfig, HitRecord } from './types'
+import { useWakeLock } from './useWakeLock'
+
+const AdminPanel = lazy(() =>
+  import('./components/AdminPanel').then((module) => ({ default: module.AdminPanel })),
+)
+
+const LEGACY_BRAND = { titleLine1: 'BLACKJACK', titleLine2: 'MATCH' }
 
 function loadConfig(): AppConfig {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultConfig
-    return { ...defaultConfig, ...JSON.parse(raw) }
+    const config = { ...defaultConfig, ...(JSON.parse(raw) as Partial<AppConfig>) }
+    // Earlier builds shipped a "Blackjack Match" wordmark. Drop it from saved setups
+    // so the branding goes away without resetting meters, theme or logo.
+    if (
+      config.titleLine1 === LEGACY_BRAND.titleLine1 &&
+      config.titleLine2 === LEGACY_BRAND.titleLine2
+    ) {
+      return { ...config, titleLine1: '', titleLine2: '', showTitle: false }
+    }
+    return config
   } catch {
     return defaultConfig
   }
@@ -31,6 +46,7 @@ function isDisplayMode(): boolean {
 
 export default function App() {
   const [isDisplay] = useState(isDisplayMode)
+  useWakeLock()
   const [config, setConfig] = useState<AppConfig>(loadConfig)
   const [hits, setHits] = useState<HitRecord[]>(loadHits)
   const [adminOpen, setAdminOpen] = useState(false)
@@ -41,8 +57,15 @@ export default function App() {
 
   const channelRef = useRef<BroadcastChannel | null>(null)
 
+  const configBooted = useRef(false)
+  const hitsBooted = useRef(false)
+
   useEffect(() => {
     if (isDisplay) return
+    if (!configBooted.current) {
+      configBooted.current = true
+      return
+    }
     const t = window.setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
     }, 400)
@@ -51,6 +74,10 @@ export default function App() {
 
   useEffect(() => {
     if (isDisplay) return
+    if (!hitsBooted.current) {
+      hitsBooted.current = true
+      return
+    }
     localStorage.setItem(HITS_KEY, JSON.stringify(hits.slice(0, 50)))
   }, [hits, isDisplay])
 
@@ -134,8 +161,10 @@ export default function App() {
     channelRef.current?.postMessage({ type: 'logo', logo: config.logo } satisfies SyncMessage)
   }, [config.logo, isDisplay])
 
+  const demoActive = config.demoRunning && config.tableOpen && config.demoHandsPerMinute > 0
+
   useEffect(() => {
-    if (isDisplay) return
+    if (isDisplay || !demoActive) return
     const dt = 0.12
     const id = window.setInterval(() => {
       const prev = configRef.current
@@ -145,7 +174,7 @@ export default function App() {
       commit({ ...prev, jackpots: result.jackpots })
     }, dt * 1000)
     return () => window.clearInterval(id)
-  }, [pushHits, commit, isDisplay])
+  }, [pushHits, commit, isDisplay, demoActive])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -198,16 +227,20 @@ export default function App() {
       <DisplayBoard config={config} celebrating={celebrating} />
       {!isDisplay && (
         <>
-          <AdminPanel
-            open={adminOpen}
-            config={config}
-            hits={hits}
-            onClose={() => setAdminOpen(false)}
-            onChange={commit}
-            onHit={onHit}
-            onWager={onWager}
-            onResetMeters={onResetMeters}
-          />
+          {adminOpen && (
+            <Suspense fallback={null}>
+              <AdminPanel
+                open
+                config={config}
+                hits={hits}
+                onClose={() => setAdminOpen(false)}
+                onChange={commit}
+                onHit={onHit}
+                onWager={onWager}
+                onResetMeters={onResetMeters}
+              />
+            </Suspense>
+          )}
           <button
             type="button"
             className="settings-fab"

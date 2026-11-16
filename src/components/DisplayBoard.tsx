@@ -1,7 +1,10 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import type { AppConfig, Jackpot } from '../types'
 import { formatMoney } from '../format'
 import { PlayingCard } from './PlayingCard'
+
+/** Milliseconds of no pointer/keyboard activity before the cursor hides. */
+const IDLE_MS = 2500
 
 interface Props {
   config: AppConfig
@@ -11,10 +14,29 @@ interface Props {
 export function DisplayBoard({ config, celebrating }: Props) {
   const { theme } = config
   const visible = config.jackpots.filter((j) => j.enabled)
+  const [cursorIdle, setCursorIdle] = useState(false)
+
+  useEffect(() => {
+    let timer = window.setTimeout(() => setCursorIdle(true), IDLE_MS)
+    const onActivity = () => {
+      setCursorIdle(false)
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => setCursorIdle(true), IDLE_MS)
+    }
+    window.addEventListener('pointermove', onActivity)
+    window.addEventListener('pointerdown', onActivity)
+    window.addEventListener('keydown', onActivity)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('pointermove', onActivity)
+      window.removeEventListener('pointerdown', onActivity)
+      window.removeEventListener('keydown', onActivity)
+    }
+  }, [])
 
   return (
     <div
-      className="board"
+      className={`board${cursorIdle ? ' idle' : ''}`}
       style={
         {
           '--bg': theme.background,
@@ -36,7 +58,7 @@ export function DisplayBoard({ config, celebrating }: Props) {
               <img
                 className="brand-logo"
                 src={config.logo}
-                alt={`${config.titleLine1} ${config.titleLine2}`}
+                alt={`${config.titleLine1} ${config.titleLine2}`.trim() || 'Table logo'}
               />
             ) : (
               <>
@@ -77,6 +99,9 @@ export function DisplayBoard({ config, celebrating }: Props) {
         </div>
 
         <footer className="board-foot">
+          {config.footerNotice?.trim() ? (
+            <span className="footer-notice">{config.footerNotice}</span>
+          ) : null}
           <span className="wager-line">
             PROGRESSIVE WAGER: {config.currencySymbol}
             {config.progressiveWager}

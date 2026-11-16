@@ -43,6 +43,8 @@ export interface AppConfig {
   titleLine2: string
   showTitle: boolean
   tableId: string
+  /** Small line on the left of the footer, e.g. "ARE YOU PLAYING SMOOTH?". */
+  footerNotice: string
   progressiveWager: number
   tableOpen: boolean
   currencySymbol: string
