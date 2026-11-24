@@ -10,7 +10,12 @@ interface Props {
 
 export function DisplayBoard({ config, celebrating }: Props) {
   const { theme } = config
-  const visible = config.jackpots.filter((j) => j.enabled)
+  const bottomPayouts = config.fixedPayoutsAtBottom
+    ? config.jackpots.filter((j) => j.enabled && j.kind === 'fixed')
+    : []
+  const visible = config.jackpots.filter(
+    (j) => j.enabled && !(config.fixedPayoutsAtBottom && j.kind === 'fixed'),
+  )
 
   return (
     <div
@@ -67,6 +72,23 @@ export function DisplayBoard({ config, celebrating }: Props) {
             />
           ))}
         </ol>
+
+        {bottomPayouts.length > 0 && (
+          <ul className="payouts" aria-label="Fixed payouts">
+            <li className="payouts-head" aria-hidden="true">
+              <span>Hand</span>
+              <span>Pays</span>
+            </li>
+            {bottomPayouts.map((j) => (
+              <li key={j.id}>
+                <span className="payout-name">{j.label}</span>
+                <span className="payout-amount">
+                  {formatMoney(j.seed, config.currencySymbol, config.decimals)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="status-slot">
           {config.tableOpen ? (

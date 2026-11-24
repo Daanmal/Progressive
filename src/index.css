@@ -231,8 +231,64 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: auto;
+  margin-top: 0;
   z-index: 1;
+}
+
+.payouts {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 640px;
+  margin: auto auto 0;
+  padding: 0;
+  list-style: none;
+  background: rgba(3, 9, 20, 0.62);
+  border: 1px solid rgba(232, 197, 71, 0.35);
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: clamp(0.6rem, 1.55cqh, 0.95rem);
+  text-align: left;
+}
+
+.payouts li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.9rem;
+  padding: 0.22em 0.75em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.payouts li:nth-child(even) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.payouts li:last-child {
+  border-bottom: 0;
+}
+
+.payouts-head {
+  font-size: 0.8em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #cfd9e6;
+  background: rgba(30, 111, 168, 0.55);
+  border-bottom-color: rgba(232, 197, 71, 0.35);
+}
+
+.payout-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #e7eef7;
+  font-weight: 500;
+}
+
+.payout-amount {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  color: var(--gold, #f3d15a);
 }
 
 .table-closed,
@@ -591,6 +647,32 @@ select {
   font-size: 0.88rem;
 }
 
+.presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.4rem;
+}
+
+.preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  line-height: 1.25;
+}
+
+.preset-name {
+  font-weight: 700;
+  color: #f4f1e8;
+}
+
+.preset-blurb {
+  font-size: 0.75rem;
+  color: #93a4bb;
+}
+
 .file-btn {
   display: inline-flex;
   align-items: center;
@@ -623,7 +705,7 @@ select {
     padding: 16px 26px 14px;
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    grid-template-rows: minmax(0, 1fr) auto auto;
+    grid-template-rows: minmax(0, 1fr) auto auto auto;
     column-gap: 26px;
     row-gap: 6px;
   }
@@ -649,7 +731,7 @@ select {
 
   .meters {
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 1;
     margin: 0;
     justify-content: center;
     gap: clamp(6px, 1.5cqh, 16px);
@@ -668,15 +750,24 @@ select {
   }
 
   .status-slot {
-    grid-column: 1;
-    grid-row: 2;
+    grid-column: 1 / -1;
+    grid-row: 3;
     margin-top: 0;
     min-height: 0;
   }
 
+  .payouts {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    width: 100%;
+    max-width: 820px;
+    margin-top: 0;
+  }
+
   .board-foot {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 4;
     margin-top: 6px;
   }
 }

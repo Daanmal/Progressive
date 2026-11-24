@@ -49,6 +49,8 @@ export interface AppConfig {
   decimals: number
   leftCard: PlayingCardSpec
   rightCard: PlayingCardSpec
+  /** Show fixed-kind jackpots as a compact list at the bottom instead of plaques. */
+  fixedPayoutsAtBottom: boolean
   /** Data URL of an operator-uploaded logo; replaces the two hero cards. */
   logo?: string
   jackpots: Jackpot[]

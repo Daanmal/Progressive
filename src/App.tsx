@@ -55,7 +55,9 @@ export default function App() {
   }, [hits, isDisplay])
 
   const configRef = useRef(config)
-  configRef.current = config
+  useEffect(() => {
+    configRef.current = config
+  }, [config])
 
   const commit = useCallback((next: AppConfig) => {
     configRef.current = next
