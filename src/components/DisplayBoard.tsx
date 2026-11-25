@@ -1,10 +1,7 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 import type { AppConfig, Jackpot } from '../types'
 import { formatMoney } from '../format'
 import { PlayingCard } from './PlayingCard'
-
-/** Milliseconds of no pointer/keyboard activity before the cursor hides. */
-const IDLE_MS = 2500
 
 interface Props {
   config: AppConfig
@@ -13,30 +10,16 @@ interface Props {
 
 export function DisplayBoard({ config, celebrating }: Props) {
   const { theme } = config
-  const visible = config.jackpots.filter((j) => j.enabled)
-  const [cursorIdle, setCursorIdle] = useState(false)
-
-  useEffect(() => {
-    let timer = window.setTimeout(() => setCursorIdle(true), IDLE_MS)
-    const onActivity = () => {
-      setCursorIdle(false)
-      window.clearTimeout(timer)
-      timer = window.setTimeout(() => setCursorIdle(true), IDLE_MS)
-    }
-    window.addEventListener('pointermove', onActivity)
-    window.addEventListener('pointerdown', onActivity)
-    window.addEventListener('keydown', onActivity)
-    return () => {
-      window.clearTimeout(timer)
-      window.removeEventListener('pointermove', onActivity)
-      window.removeEventListener('pointerdown', onActivity)
-      window.removeEventListener('keydown', onActivity)
-    }
-  }, [])
+  const bottomPayouts = config.fixedPayoutsAtBottom
+    ? config.jackpots.filter((j) => j.enabled && j.kind === 'fixed')
+    : []
+  const visible = config.jackpots.filter(
+    (j) => j.enabled && !(config.fixedPayoutsAtBottom && j.kind === 'fixed'),
+  )
 
   return (
     <div
-      className={`board${cursorIdle ? ' idle' : ''}`}
+      className="board"
       style={
         {
           '--bg': theme.background,
@@ -58,7 +41,7 @@ export function DisplayBoard({ config, celebrating }: Props) {
               <img
                 className="brand-logo"
                 src={config.logo}
-                alt={`${config.titleLine1} ${config.titleLine2}`.trim() || 'Table logo'}
+                alt={`${config.titleLine1} ${config.titleLine2}`}
               />
             ) : (
               <>
@@ -90,6 +73,23 @@ export function DisplayBoard({ config, celebrating }: Props) {
           ))}
         </ol>
 
+        {bottomPayouts.length > 0 && (
+          <ul className="payouts" aria-label="Fixed payouts">
+            <li className="payouts-head" aria-hidden="true">
+              <span>Hand</span>
+              <span>Pays</span>
+            </li>
+            {bottomPayouts.map((j) => (
+              <li key={j.id}>
+                <span className="payout-name">{j.label}</span>
+                <span className="payout-amount">
+                  {formatMoney(j.seed, config.currencySymbol, config.decimals)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
         <div className="status-slot">
           {config.tableOpen ? (
             <p className="table-open">Table Open</p>
@@ -99,9 +99,6 @@ export function DisplayBoard({ config, celebrating }: Props) {
         </div>
 
         <footer className="board-foot">
-          {config.footerNotice?.trim() ? (
-            <span className="footer-notice">{config.footerNotice}</span>
-          ) : null}
           <span className="wager-line">
             PROGRESSIVE WAGER: {config.currencySymbol}
             {config.progressiveWager}

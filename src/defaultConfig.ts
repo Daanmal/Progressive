@@ -15,6 +15,7 @@ export const defaultConfig: AppConfig = {
   decimals: 1,
   leftCard: { rank: 'A', suit: 'spades' },
   rightCard: { rank: 'K', suit: 'hearts' },
+  fixedPayoutsAtBottom: true,
   demoHandsPerMinute: 18,
   demoRunning: true,
   theme: {

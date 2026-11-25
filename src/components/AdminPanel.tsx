@@ -2,6 +2,7 @@ import type { AppConfig, HitRecord, Jackpot, JackpotKind, Rank, Suit } from '../
 import { RANKS, SUITS } from '../types'
 import { formatMoney, uid } from '../format'
 import { defaultConfig } from '../defaultConfig'
+import { presets } from '../presets'
 
 interface Props {
   config: AppConfig
@@ -246,6 +247,17 @@ export function AdminPanel({
         <p className="hint">
           Progressives climb per side wager; must-hit meters show their cap beside the label.
         </p>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={config.fixedPayoutsAtBottom}
+            onChange={(e) => set({ fixedPayoutsAtBottom: e.target.checked })}
+          />
+          List fixed payouts at the bottom
+        </label>
+        <p className="hint">
+          Fixed payouts appear as a compact list under the meters instead of plaques.
+        </p>
         <div className="meters-editors">
           {config.jackpots.map((j, i) => (
             <details key={j.id} className="jackpot-edit">
@@ -480,6 +492,27 @@ export function AdminPanel({
         </div>
       </section>
 
+      <section className="span-2">
+        <h3>Presets</h3>
+        <p className="hint">
+          Load a ready-made sign. Meters, colours and table details are replaced; a
+          logo you uploaded is kept.
+        </p>
+        <div className="presets">
+          {presets.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              className="preset"
+              onClick={() => onChange({ ...preset.config, logo: config.logo })}
+            >
+              <span className="preset-name">{preset.name}</span>
+              <span className="preset-blurb">{preset.blurb}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section>
         <h3>Backup</h3>
         <div className="add-row">
@@ -497,9 +530,6 @@ export function AdminPanel({
               }}
             />
           </label>
-          <button type="button" onClick={() => onChange(defaultConfig)}>
-            Restore sample
-          </button>
         </div>
       </section>
 
